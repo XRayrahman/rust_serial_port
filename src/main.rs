@@ -95,7 +95,7 @@ fn read_port(port: &str, baud_rate: u32, num_bytes: usize) -> Result<()> {
             Ok(byte_read) => {
                 if byte_read > 0 {
                     let data = String::from_utf8_lossy(&serial_buf[..byte_read]);
-                    let cleaned_data = data.trim().replace("\r", "").replace("\n", "");
+                    let cleaned_data = data.trim().replace(['\r', '\n'], "");
                     if !cleaned_data.is_empty() {
                         println!("Read {} bytes: {}", byte_read, cleaned_data);
                     }
@@ -125,7 +125,7 @@ fn write_to_port(port: &str, baud_rate: u32, message: &str) -> Result<()> {
             format!("a{}", message)
         };
 
-        port_ecu.write(complete_msg.as_bytes())?;
+        port_ecu.write_all(complete_msg.as_bytes())?;
         println!("Message '{}' written to serial port", complete_msg);
 
         sleep(Duration::from_millis(complete_msg.len() as u64));
